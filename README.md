@@ -1,4 +1,5 @@
 GAuthLib
+
 Python3
 
 Created by https://github.com/robolague/
@@ -21,10 +22,13 @@ https://console.cloud.google.com/projectcreate
 ```
 
 Name the project anything you want, then go to:
+
 https://console.cloud.google.com/apis/library?
+
 Enable Gmail API and Admin SDK, and Calendar API
 
 To enable a service account(required):
+
 https://console.cloud.google.com/iam-admin/serviceaccounts/project
 
 Service account user role for the service account. Get the service account name (will end in iam.gserviceaccount.com)
@@ -61,6 +65,9 @@ https://www.googleapis.com/auth/calendar
 
 API References:
 https://developers.google.com/resources/api-libraries/documentation/admin/directory_v1/python/latest/index.html
+
 https://developers.google.com/gmail/api/v1/reference/
+
 https://developers.google.com/apis-explorer/?hl=en_US#p/calendar/v3/
+
 https://developers.google.com/calendar/
