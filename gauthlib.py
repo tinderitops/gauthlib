@@ -33,7 +33,7 @@ def servicecreds(scope):
 #Gmail&GCal Requires the end-user to be impersonated
 def impersonateservicecreds(enduser, scope):
     SERVICE_ACCOUNT_EMAIL = service_account
-    SERVICE_ACCOUNT_JSON_FILE_PATH = json_file_name
+    SERVICE_ACCOUNT_JSON_FILE_PATH = dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + json_file_name
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
     SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
     #impersonates end-user
@@ -422,6 +422,19 @@ def addAddress(userEmail,address):
     for item in addresslist:
         addresssubmit.append({'formatted': item, 'type':'home'})
     container = {'addresses':addresssubmit}
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
+    try:
+        results = userservice.users().patch(userKey = userEmail, body = container).execute()
+        return results
+    except:
+        return "Error"
+
+def addAddressByList(userEmail, addresslist):
+    addresssubmit = []
+    for item in addresslist:
+        addresssubmit.append({'formatted': item, 'type':'home'})
+    container = {'addresses':addresssubmit}
+    pprint(container)
     userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
     try:
         results = userservice.users().patch(userKey = userEmail, body = container).execute()
