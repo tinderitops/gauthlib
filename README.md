@@ -59,7 +59,16 @@ https://www.googleapis.com/auth/gmail.settings.basic,
 https://www.googleapis.com/auth/gmail.settings.sharing,
 https://www.googleapis.com/auth/admin.directory.user.security,
 https://mail.google.com/,
-https://www.googleapis.com/auth/calendar
+https://www.googleapis.com/auth/calendar,
+https://www.googleapis.com/auth/gmail.modify,
+https://www.googleapis.com/auth/gmail.settings.basic,
+https://www.googleapis.com/auth/gmail.settings.sharing,
+https://www.googleapis.com/auth/spreadsheets.readonly,
+https://www.googleapis.com/auth/drive,
+https://www.googleapis.com/auth/drive.file,
+https://www.googleapis.com/auth/drive.readonly,
+https://www.googleapis.com/auth/spreadsheets,
+https://www.googleapis.com/auth/spreadsheets.readonly
 ```
 
 
@@ -74,3 +83,7 @@ https://developers.google.com/apis-explorer/?hl=en_US#p/calendar/v3/
 https://developers.google.com/calendar/
 
 https://developers.google.com/admin-sdk/data-transfer
+
+https://developers.google.com/sheets/api/reference/rest/
+
+https://developers.google.com/drive/api/v3/reference/
