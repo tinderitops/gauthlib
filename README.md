@@ -48,7 +48,7 @@ Open the JSON file and retrieve the 'client_id' and make a note of it.
 
 Go to https://admin.google.com/ManageOauthClients
 
-For your client_id, authorize the following scopes:
+For your client_id, authorize the following scopes (or any subset you will need for the function(s) you want to use):
 ```
 https://www.googleapis.com/auth/admin.directory.user,
 https://www.googleapis.com/auth/admin.directory.group,
