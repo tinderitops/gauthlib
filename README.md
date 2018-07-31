@@ -8,7 +8,7 @@ A python library for accessing Google APIs (Admin SDK, Mail, and Calendar)
 
 Download this repo and from the directory:
 ```
-sudo pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 To set your passwords up, edit gauthlib and replace:
