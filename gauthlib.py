@@ -27,6 +27,8 @@ def servicecreds(scope):
     SERVICE_ACCOUNT_JSON_FILE_PATH = dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + json_file_name
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
     SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
+    #possible to use from json dict instead using:
+    #credentials = ServiceAccountCredentials.from_json_keyfile_dict(authorization, scopes=scope)
     mycreds = credentials.create_delegated(my_admin)
     return mycreds
 
@@ -36,6 +38,8 @@ def impersonateservicecreds(enduser, scope):
     SERVICE_ACCOUNT_JSON_FILE_PATH = dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + json_file_name
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
     SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
+    #possible to use from json dict instead using:
+    #credentials = ServiceAccountCredentials.from_json_keyfile_dict(authorization, scopes=scope)
     #impersonates end-user
     mycreds = credentials.create_delegated(enduser)
     return mycreds
