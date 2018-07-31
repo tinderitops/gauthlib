@@ -441,3 +441,17 @@ def addAddressByList(userEmail, addresslist):
         return results
     except:
         return "Error"
+
+#Google Drive
+def listDriveFiles(userEmail):
+    driveservice = build('drive', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/drive.readonly'))
+    files = driveservice.files().list().execute()
+    print(files)
+
+#Google Sheets
+def getSheetValue(userEmail,sheet,key):
+    sheetservice = build('sheets', 'v4', credentials=impersonateservicecreds(userEmail, 'https://www.googleapis.com/auth/spreadsheets.readonly'))
+    sheetvalue = sheetservice.spreadsheets().values().get(spreadsheetId=sheet, range=key).execute()
+    print(sheetvalue['values'])
+
+  
