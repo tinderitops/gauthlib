@@ -4,7 +4,7 @@ Python3
 
 Created by https://github.com/robolague/ and https://github.com/edwinruizr
 
-A python library for accessing Google APIs (Admin SDK, Mail, and Calendar)
+A python function library for accessing Google APIs (Admin SDK, Mail, and Calendar)
 
 Download this repo and from the directory:
 ```
