@@ -25,7 +25,7 @@ Name the project anything you want, then go to:
 
 https://console.cloud.google.com/apis/library?
 
-Enable Gmail API and Admin SDK, and Calendar API
+Enable Gmail API and Admin SDK, Calendar API, Drive API, Sheets API
 
 To enable a service account(required):
 
