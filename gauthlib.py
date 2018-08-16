@@ -451,6 +451,21 @@ def listDriveFiles(userEmail):
     driveservice = build('drive', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/drive.readonly'))
     files = driveservice.files().list().execute()
     print(files)
+    
+def listTeamDrives(pageToken=None):
+    drivecontainer = []
+    driveservice = build('drive', 'v3', credentials=servicecreds('https://www.googleapis.com/auth/drive.readonly'))
+    request = driveservice.teamdrives().list(useDomainAdminAccess=True,pageToken=pageToken)
+    try:
+        while request is not None:
+            results = request.execute()
+            for item in results['teamDrives']:
+                #pprint(item)
+                drivecontainer.append(item)
+            request = driveservice.teamdrives().list_next(request,results)
+        return drivecontainer
+    except:
+        return "Error"
 
 #Google Sheets
 def getSheetValue(userEmail,sheet,key):
