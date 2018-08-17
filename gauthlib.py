@@ -119,6 +119,33 @@ def forcePasswordChangeNextLogin(userEmail):
     except:
         return "Error"
 
+def getUserVerificationCodes(userEmail):
+    container = []
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user.security'))
+    try:
+        results = userservice.verificationCodes().list(userKey=userEmail).execute()
+        return results['items']
+    except:
+        return "Error"
+
+def generateUserVerificationCodes(userEmail):
+    container = {}
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user.security'))
+    try:
+        results = userservice.verificationCodes().generate(userKey = userEmail).execute()
+        return "Success"
+    except:
+        return "Error"
+
+def invalidateUserVerificationCodes(userEmail):
+    container = {}
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user.security'))
+    try:
+        results = userservice.verificationCodes().invalidate(userKey = userEmail).execute()
+        return "Success"
+    except:
+        return "Error"
+
 #email
 
 def unshareProfileInGAL(userEmail):
@@ -410,12 +437,14 @@ def listCalendarACL(calID, pageToken=None, showDeleted=False):
     try:
         while request is not None:
             results = request.execute()
+            #pprint(results)
             for item in results['items']:
                 container.append(item)
             request = calservice.acl().list_next(request,results)
             return container
     except:
         return "Error"
+
 
 #Address Updates
 
@@ -465,7 +494,7 @@ def listDriveFiles(userEmail):
     driveservice = build('drive', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/drive.readonly'))
     files = driveservice.files().list().execute()
     print(files)
-    
+
 def listTeamDrives(pageToken=None):
     drivecontainer = []
     driveservice = build('drive', 'v3', credentials=servicecreds('https://www.googleapis.com/auth/drive.readonly'))
@@ -487,4 +516,3 @@ def getSheetValue(userEmail,sheet,key):
     sheetvalue = sheetservice.spreadsheets().values().get(spreadsheetId=sheet, range=key).execute()
     print(sheetvalue['values'])
 
-  
