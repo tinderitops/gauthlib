@@ -389,9 +389,9 @@ def addSchemaRole(userEmail,schema,role):
 
 #Calendars
 
-def listEvents(userEmail):
+def listEvents(userEmail, calendarID='primary'):
     calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
-    results = calservice.events().list(calendarId='primary').execute()
+    results = calservice.events().list(calendarId=calendarID).execute()
     pprint(results)
 
 
