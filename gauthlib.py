@@ -392,7 +392,7 @@ def addSchemaRole(userEmail,schema,role):
 def listEvents(userEmail, calendarID='primary'):
     calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
     results = calservice.events().list(calendarId=calendarID).execute()
-    pprint(results)
+    return results
 
 
 def listAllCalendars(userEmail):
@@ -401,7 +401,7 @@ def listAllCalendars(userEmail):
     results = calservice.calendarList().list().execute()
     for item in results['items']:
         container[item['summary']] = item['id']
-    pprint(container)
+    return container
 
 #Address Updates
 
