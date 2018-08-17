@@ -1,0 +1,16 @@
+Why use gauthlib?
+
+Gauthlib has only a subset of features of another project, such as GAM, but we aspire to feature-parity, with the help of the open-source community.
+
+If management of Google Apps from the command-line is your ultimate goal, GAM or its' many permutations are the appropriate tool.
+However, if you are parsing data from one GAM command into another in Python, using subprocess.popen and splitlines, gauthlib might be right for you. Native JSON data is available from the Google API, and this library exposes that data more simply.
+
+This is also a lightweight library, easily importable into another, more complex script, and which can be packaged together to work with that without needing to first install a GAM binary.
+
+Oftentimes, people will set up multiple Cloud Projects in order to use multiple instances of GAM. While there are several workarounds to that, this project is designed to easily allow one set of service credentials to manage multiple instances of gauthlib.
+
+This project is also easily dis-assembled. Most calls have their own single functions, and all irrelevant functions can be removed in order to reduce attack vectors or minimize the possibility for misuse. If you are packaging an app with only a single gauthlib call, you can remove most others except the credential authorization and minimize the potential damage by authorizing only a single scope.
+
+This project is also easily contributeable. It is not arduous to add new functions by copying a similar one and changing the parameters. The templates for each kind of call are easy to read and reproduce.
+
+This project is also well-suited for AWS, especially Lambda functions and ephemeral instances. Using AWS Secrets Manager to store json authorization data provides security for cloud-based implementations of GSuite Admin API calls.
