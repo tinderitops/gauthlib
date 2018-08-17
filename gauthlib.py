@@ -403,6 +403,20 @@ def listAllCalendars(userEmail):
         container[item['summary']] = item['id']
     return container
 
+def listCalendarACL(calID, pageToken=None, showDeleted=False):
+    container = []
+    calservice = build('calendar', 'v3', credentials=servicecreds('https://www.googleapis.com/auth/calendar'))
+    request = calservice.acl().list(calendarId=calID,pageToken=pageToken,showDeleted=showDeleted)
+    try:
+        while request is not None:
+            results = request.execute()
+            for item in results['items']:
+                container.append(item)
+            request = calservice.acl().list_next(request,results)
+            return container
+    except:
+        return "Error"
+
 #Address Updates
 
 def getAddress(userEmail):
