@@ -521,4 +521,6 @@ def getSheetValue(userEmail,sheet,key):
     try:
         sheetvalue = sheetservice.spreadsheets().values().get(spreadsheetId=sheet, range=key).execute()
         return sheetvalue['values']
+    except:
+        return "Error"
 
