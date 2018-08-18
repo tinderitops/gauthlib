@@ -191,14 +191,14 @@ def setUserAlias(userEmail, aliasEmail):
 def getVacation(userEmail):
     container = {}
     emailservice = build('gmail', 'v1', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/gmail.modify'))
-    #try:
-    results = emailservice.users().settings().getVacation(userId=userEmail).execute()
-    container['response'] = results.get('responseBodyHtml')
-    container['subject'] = results.get('responseSubject')
-    container['VacationOn'] = results.get('enableAutoReply')
-    return container
-    #except:
-    #   return "Error"
+    try:
+        results = emailservice.users().settings().getVacation(userId=userEmail).execute()
+        container['response'] = results.get('responseBodyHtml')
+        container['subject'] = results.get('responseSubject')
+        container['VacationOn'] = results.get('enableAutoReply')
+        return container
+    except:
+        return "Error"
 
 def setVacation(userEmail, responseSubject, responseBodyHtml):
     container = {}
@@ -253,11 +253,11 @@ def getGmailSignature(userEmail):
 def addForwardingAddress(userEmail, forwardingEmail):
     container = {'forwardingEmail':forwardingEmail}
     emailservice = build('gmail', 'v1', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/gmail.settings.sharing'))
-    #try:
-    results = emailservice.users().settings().forwardingAddresses().create(userId=userEmail, body=container).execute()
-    return results
-    #except:
-    #    return "Error"
+    try:
+        results = emailservice.users().settings().forwardingAddresses().create(userId=userEmail, body=container).execute()
+        return results
+    except:
+        return "Error"
 
 def getAutoForwarding(userEmail):
     container = {}
@@ -270,16 +270,15 @@ def getAutoForwarding(userEmail):
     except:
         return "Error"
 
-#needs fixing to add the forwarding addres prior to turning on forwarding.
 def setAutoForwarding(userEmail, forwardingEmail):
     addForwardingAddress(userEmail,forwardingEmail)
     container = {'enabled':True, 'emailAddress':forwardingEmail, 'disposition':'leaveInInbox'}
     emailservice = build('gmail', 'v1', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/gmail.settings.sharing'))
-    #try:
-    results = emailservice.users().settings().updateAutoForwarding(userId=userEmail, body=container).execute()
-    return results
-    #except:
-    #    return "Error"
+    try:
+        results = emailservice.users().settings().updateAutoForwarding(userId=userEmail, body=container).execute()
+        return results
+    except:
+        return "Error"
 
 def removeAutoForwarding(userEmail):
     container = {'enabled':False}
@@ -418,17 +417,23 @@ def addSchemaRole(userEmail,schema,role):
 
 def listEvents(userEmail, calendarID='primary'):
     calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
-    results = calservice.events().list(calendarId=calendarID).execute()
-    return results
+    try:
+        results = calservice.events().list(calendarId=calendarID).execute()
+        return results
+    except:
+        return "Error"
 
 
 def listAllCalendars(userEmail):
     container = {}
     calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
-    results = calservice.calendarList().list().execute()
-    for item in results['items']:
-        container[item['summary']] = item['id']
-    return container
+    try:
+        results = calservice.calendarList().list().execute()
+        for item in results['items']:
+            container[item['summary']] = item['id']
+        return container
+    except:
+        return "Error"
 
 def listCalendarACL(calID, pageToken=None, showDeleted=False):
     container = []
@@ -437,7 +442,6 @@ def listCalendarACL(calID, pageToken=None, showDeleted=False):
     try:
         while request is not None:
             results = request.execute()
-            #pprint(results)
             for item in results['items']:
                 container.append(item)
             request = calservice.acl().list_next(request,results)
@@ -481,7 +485,6 @@ def addAddressByList(userEmail, addresslist):
     for item in addresslist:
         addresssubmit.append({'formatted': item, 'type':'home'})
     container = {'addresses':addresssubmit}
-    pprint(container)
     userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
     try:
         results = userservice.users().patch(userKey = userEmail, body = container).execute()
@@ -492,8 +495,11 @@ def addAddressByList(userEmail, addresslist):
 #Google Drive
 def listDriveFiles(userEmail):
     driveservice = build('drive', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/drive.readonly'))
-    files = driveservice.files().list().execute()
-    print(files)
+    try:
+        files = driveservice.files().list().execute()
+        return files
+    except:
+        return "Error"
 
 def listTeamDrives(pageToken=None):
     drivecontainer = []
@@ -503,7 +509,6 @@ def listTeamDrives(pageToken=None):
         while request is not None:
             results = request.execute()
             for item in results['teamDrives']:
-                #pprint(item)
                 drivecontainer.append(item)
             request = driveservice.teamdrives().list_next(request,results)
         return drivecontainer
@@ -513,6 +518,7 @@ def listTeamDrives(pageToken=None):
 #Google Sheets
 def getSheetValue(userEmail,sheet,key):
     sheetservice = build('sheets', 'v4', credentials=impersonateservicecreds(userEmail, 'https://www.googleapis.com/auth/spreadsheets.readonly'))
-    sheetvalue = sheetservice.spreadsheets().values().get(spreadsheetId=sheet, range=key).execute()
-    print(sheetvalue['values'])
+    try:
+        sheetvalue = sheetservice.spreadsheets().values().get(spreadsheetId=sheet, range=key).execute()
+        return sheetvalue['values']
 
