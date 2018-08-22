@@ -146,7 +146,7 @@ def invalidateUserVerificationCodes(userEmail):
     except:
         return "Error"
 
-#email
+#Email
 
 def unshareProfileInGAL(userEmail):
     container = {}
@@ -302,6 +302,15 @@ def listASPS(userEmail):
     except:
         return "Error"
 
+def infoASPS(userEmail, codeID):
+    container = []
+    aspsservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user.security'))
+    try:
+        results = aspsservice.asps().get(codeId=codeID,userkey=userEmail).execute()
+        return results
+    except:
+        return "Error"
+
 def deleteASPS(userEmail, codeID):
     container = []
     aspsservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user.security'))
@@ -359,6 +368,29 @@ def getUserGroups(userEmail):
     except:
         return "No User/Groups"
 
+#ChromeDevices
+def listChromeDevices(customerID='my_customer',pageToken=None,orderBy="status", orgUnitPath="",projection="FULL"):
+    chromecontainer = []
+    chromeservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'))
+    request = chromeservice.chromeosdevices().list(customerId=customerID,pageToken=pageToken,orderBy=orderBy,orgUnitPath=orgUnitPath,projection=projection)
+    try:
+        while request is not None:
+            results = request.execute()
+            print(results)
+            for item in results['chromeosdevices']:
+                chromecontainer.append(item)
+            request = chromeservice.chromeosdevices().list_next(request,results)
+        return chromecontainer
+    except:
+        return "Error"
+
+def getChromeDevice(deviceID,customerID='my_customer', projection="FULL"):
+    chromeservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'))
+    try:
+        results = chromeservice.chromeosdevices().get(customerId=customerID,deviceId=deviceID,projection=projection)
+        return results
+    except:
+        return "Error"
 
 #Devices
 def getDevicesFromMDM(QueryID):
@@ -521,6 +553,8 @@ def getSheetValue(userEmail,sheet,key):
     try:
         sheetvalue = sheetservice.spreadsheets().values().get(spreadsheetId=sheet, range=key).execute()
         return sheetvalue['values']
+    except:
+        return "Error"
     except:
         return "Error"
 
