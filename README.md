@@ -70,7 +70,9 @@ https://www.googleapis.com/auth/drive.readonly,
 https://www.googleapis.com/auth/spreadsheets,
 https://www.googleapis.com/auth/spreadsheets.readonly,
 https://www.googleapis.com/auth/admin.datatransfer,
-https://www.googleapis.com/auth/admin.datatransfer.readonly
+https://www.googleapis.com/auth/admin.datatransfer.readonly,
+https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
+
 ```
 
 
