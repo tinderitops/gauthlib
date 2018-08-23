@@ -392,6 +392,33 @@ def getChromeDevice(deviceID,customerID='my_customer', projection="FULL"):
     except:
         return "Error"
 
+def actionChromeDevice(deviceID,action,customerID='my_customer',deprovision_reason="same_model_replacement"):
+    chromeactioncontainer = {}
+    chromeservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.device.chromeos'))
+    if action == 'deprovision':
+        chromeactioncontainer = {'action':action,'deprovisionReason':deprovision_reason}
+    else:
+        chromeactioncontainer = {'action':action}
+    try:
+        results = chromeservice.chromeosdevices().action(customerId=customerID,deviceId=deviceID,body=chromeactioncontainer).execute()
+        return results
+    except:
+        return "Error"
+
+def moveChromeDeviceOU(orgUnitMoveTo,deviceIDs,customerID='my_customer'):
+    deviceIDsContainer = {'deviceIds':deviceIDs}
+    chromeservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.device.chromeos'))
+    try:
+        results = chromeservice.chromeosdevices().moveDevicesToOu(customerId=customerID,orgUnitPath=orgUnitMoveTo,body=deviceIDsContainer)
+        return results
+    except:
+        return "Error"
+
+
+
+
+
+
 #Devices
 def getDevicesFromMDM(QueryID):
     container = []
@@ -555,6 +582,3 @@ def getSheetValue(userEmail,sheet,key):
         return sheetvalue['values']
     except:
         return "Error"
-    except:
-        return "Error"
-
