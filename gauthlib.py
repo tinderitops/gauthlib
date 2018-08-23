@@ -322,6 +322,19 @@ def deleteASPS(userEmail, codeID):
 
 
 #Members/Groups
+
+def doesGroupExist(groupIDer):
+    groupexistcontainer = False
+    groupservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.group.readonly'))
+    try:
+        results = groupservice.groups().get(groupKey=groupIDer).execute()
+        if results is not None:
+            groupexistcontainer = True
+        return groupexistcontainer
+    except:
+        return groupexistcontainer
+
+
 def getMembers(GroupIDer, pageToken=None, maxResults=200):
     container = {}
     membercontainer = []
