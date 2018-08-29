@@ -430,8 +430,6 @@ def moveChromeDeviceOU(orgUnitMoveTo,deviceIDs,customerID='my_customer'):
 
 
 
-
-
 #Devices
 def getDevicesFromMDM(QueryID):
     container = []
@@ -487,14 +485,52 @@ def addSchemaRole(userEmail,schema,role):
 
 #Calendars
 
-def listEvents(userEmail, calendarID='primary'):
-    calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
+def makeEventYearlyRecurring(calendarID,eventID):
+    container = {'recurrence':['RRULE:FREQ=YEARLY']}
+    calservice = build('calendar', 'v3', credentials=servicecreds('https://www.googleapis.com/auth/calendar'))
     try:
-        results = calservice.events().list(calendarId=calendarID).execute()
+        results = calservice.events().patch(calendarId=calendarID,eventId=eventID, body=container).execute()
         return results
     except:
         return "Error"
 
+def suspensionUser(userEmail, suspended=True):
+    container = {}
+    container['suspended'] = suspended
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
+    try:
+        results = userservice.users().patch(userKey = userEmail, body = container).execute()
+        return results
+    except:
+        return "Error"
+
+def listEvents(userEmail, calendarID='primary'):
+    calevents = []
+    calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
+    request = calservice.events().list(calendarId=calendarID)
+    try:
+        while request is not None:
+            results = request.execute()
+            for item in results['items']:
+                calevents.append(item)
+            request = calservice.events().list_next(request,results)
+        return calevents
+    except:
+        return "Error"
+
+def listEventIDs(userEmail, calendarID='primary'):
+    calevents = []
+    calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
+    request = calservice.events().list(calendarId=calendarID)
+    try:
+        while request is not None:
+            results = request.execute()
+            for item in results['items']:
+                calevents.append(item['id'])
+            request = calservice.events().list_next(request,results)
+        return calevents
+    except:
+        return "Error"
 
 def listAllCalendars(userEmail):
     container = {}
