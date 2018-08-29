@@ -494,16 +494,6 @@ def makeEventYearlyRecurring(calendarID,eventID):
     except:
         return "Error"
 
-def suspensionUser(userEmail, suspended=True):
-    container = {}
-    container['suspended'] = suspended
-    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
-    try:
-        results = userservice.users().patch(userKey = userEmail, body = container).execute()
-        return results
-    except:
-        return "Error"
-
 def listEvents(userEmail, calendarID='primary'):
     calevents = []
     calservice = build('calendar', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/calendar'))
