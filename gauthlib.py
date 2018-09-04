@@ -289,6 +289,16 @@ def removeAutoForwarding(userEmail):
     except:
         return "Error"
 
+def createDelegatedEmail(userEmail,delegateTo):
+    container = {'delegateEmail': delegateTo}
+    emailservice = build('gmail', 'v1', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/gmail.settings.sharing'))
+    try:
+        results = emailservice.users().settings().delegates().create(userId=userEmail,body=container).execute()
+        return results
+    except:
+        return "Error"
+
+
 #Authorized Keys
 
 def listASPS(userEmail):
@@ -493,6 +503,7 @@ def makeEventYearlyRecurring(calendarID,eventID):
         return results
     except:
         return "Error"
+
 
 def listEvents(userEmail, calendarID='primary'):
     calevents = []
