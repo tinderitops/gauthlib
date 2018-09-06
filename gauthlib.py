@@ -7,6 +7,7 @@ import os
 from pprint import pprint
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
+from googleapiclient.errors import HttpError
 
 #setup using instructions in README
 my_admin = 'admin.user@domain.com'
