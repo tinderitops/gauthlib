@@ -52,6 +52,7 @@ For your client_id, authorize the following scopes (or any subset you will need 
 ```
 https://www.googleapis.com/auth/admin.directory.user,
 https://www.googleapis.com/auth/admin.directory.group,
+https://www.googleapis.com/auth/admin.directory.group.readonly,
 https://www.googleapis.com/auth/admin.directory.group.member,
 https://www.googleapis.com/auth/admin.directory.group.member.readonly,
 https://www.googleapis.com/auth/admin.directory.device.mobile,
