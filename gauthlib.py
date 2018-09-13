@@ -80,6 +80,7 @@ def createUser(userEmail, orgUnit, firstname, lastname, department, password, ch
 
 def listAllSuspendedUsers(customer="my_customer"):
     usercontainer = []
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
     request = userservice.users().list(customer=customer)
     #try:
     while request is not None:
