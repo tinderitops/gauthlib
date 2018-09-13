@@ -58,9 +58,39 @@ def createUser(userEmail, orgUnit, firstname, lastname, department, password, ch
     userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
     try:
         results = userservice.users().insert(body=container).execute()
-        return results
-    except:
-        return "Error"
+        return ("Created " + results['name']['givenName'] + " " + results['name']['familyName'] + "'s email (" + results['primaryEmail'] + ")")
+
+    except HttpError as error:
+        # see if the error contains the message 'Entity already exists'
+        # which is the message it responds with when the email already exists
+        if "Entity already exists" in str(error):
+            print("User already exists! Going to attempt to unsuspend and add to global address list.")
+            # unsuspend user account
+            suspensionUser(userEmail=userEmail, suspended=False)
+            # reshare email in global address list
+            shareProfileInGAL(userEmail=userEmail)
+            # update user (email) with proper fields with content in the container object
+            results = userservice.users().patch(userKey = userEmail, body = container).execute()
+            return ("Unsuspended and added " + userEmail+ " to the global address list.")
+        else:
+            # an exception occurred that we didn't expect, return it to caller.
+            raise Exception(error)
+    except Exception as e:
+        raise Exception(e)
+
+def listAllSuspendedUsers(customer="my_customer"):
+    usercontainer = []
+    request = userservice.users().list(customer=customer)
+    #try:
+    while request is not None:
+        results = request.execute()
+        for item in results['users']:
+            if item['suspended'] == True:
+                usercontainer.append(item['primaryEmail'])
+        request = userservice.users().list_next(request,results)
+    return usercontainer
+    #except:
+    #    return "Error"
 
 def suspensionUser(userEmail, suspended=True):
     container = {}
@@ -390,7 +420,7 @@ def getUserGroups(userEmail):
             container.append(item['email'])
         return container
     except:
-        return "No User/Groups"
+        return ["No Groups"]
 
 #ChromeDevices
 def listChromeDevices(customerID='my_customer',pageToken=None,orderBy="status", orgUnitPath="",projection="FULL"):
@@ -610,6 +640,15 @@ def listDriveFiles(userEmail):
         return files
     except:
         return "Error"
+
+def transferDriveFileOwner(userEmail, fileID, newOwner):
+    container = {'role':'owner','type':'user','emailAddress':newOwner}
+    driveservice = build('drive', 'v3', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/drive'))
+    #try:
+    results = driveservice.permissions().create(transferOwnership=True,fileId=fileID,body=container).execute()
+    return results
+    #except:
+    #    return "Error"
 
 def listTeamDrives(pageToken=None):
     drivecontainer = []
