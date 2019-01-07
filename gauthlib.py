@@ -4,6 +4,7 @@ import requests
 import time
 import json
 import os
+import pandas
 from pprint import pprint
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
@@ -13,6 +14,7 @@ from googleapiclient.errors import HttpError
 my_admin = 'admin.user@domain.com'
 service_account = 'myservice@projectname.iam.gserviceaccount.com'
 json_file_name = 'myJSONkey.json'
+SERVICE_ACCOUNT_JSON_FILE_PATH = dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + json_file_name
 
 
 #ReadExternalFile
@@ -25,9 +27,7 @@ def readFile(path):
 #ServiceCredentials
 def servicecreds(scope):
     SERVICE_ACCOUNT_EMAIL = service_account
-    SERVICE_ACCOUNT_JSON_FILE_PATH = dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + json_file_name
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
     #possible to use from json dict instead using:
     #credentials = ServiceAccountCredentials.from_json_keyfile_dict(authorization, scopes=scope)
     mycreds = credentials.create_delegated(my_admin)
@@ -36,9 +36,7 @@ def servicecreds(scope):
 #Gmail&GCal Requires the end-user to be impersonated
 def impersonateservicecreds(enduser, scope):
     SERVICE_ACCOUNT_EMAIL = service_account
-    SERVICE_ACCOUNT_JSON_FILE_PATH = dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + json_file_name
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_JSON_FILE_PATH, scopes=scope)
     #possible to use from json dict instead using:
     #credentials = ServiceAccountCredentials.from_json_keyfile_dict(authorization, scopes=scope)
     #impersonates end-user
@@ -46,6 +44,17 @@ def impersonateservicecreds(enduser, scope):
     return mycreds
 
 #Users
+
+def doesUserExist(user):
+    userexistcontainer = False
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user.readonly'))
+    try:
+        results = userservice.users().get(userKey=user).execute()
+        if results is not None:
+            userexistcontainer = True
+        return userexistcontainer
+    except:
+        return userexistcontainer
 
 def createUser(userEmail, orgUnit, firstname, lastname, department, password, changePasswordAtNextLogin=True):
     container = {}
@@ -87,6 +96,19 @@ def listAllSuspendedUsers(customer="my_customer"):
         results = request.execute()
         for item in results['users']:
             if item['suspended'] == True:
+                usercontainer.append(item['primaryEmail'])
+        request = userservice.users().list_next(request,results)
+    return usercontainer
+
+def listAllActiveUsers(customer="my_customer"):
+    usercontainer = []
+    userservice = build('admin', 'directory_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.directory.user'))
+    request = userservice.users().list(customer=customer)
+    #try:
+    while request is not None:
+        results = request.execute()
+        for item in results['users']:
+            if item['suspended'] == False:
                 usercontainer.append(item['primaryEmail'])
         request = userservice.users().list_next(request,results)
     return usercontainer
@@ -326,6 +348,14 @@ def createDelegatedEmail(userEmail,delegateTo):
     emailservice = build('gmail', 'v1', credentials=impersonateservicecreds(userEmail,'https://www.googleapis.com/auth/gmail.settings.sharing'))
     try:
         results = emailservice.users().settings().delegates().create(userId=userEmail,body=container).execute()
+        return results
+    except:
+        return "Error"
+
+def removeDelegatedEmail(delegatedTo,delegatedFrom):
+    emailservice = build('gmail', 'v1', credentials=impersonateservicecreds(delegatedFrom,'https://www.googleapis.com/auth/gmail.settings.sharing'))
+    try:
+        results = emailservice.users().settings().delegates().delete(delegateEmail=delegatedTo,userId=delegatedFrom).execute()
         return results
     except:
         return "Error"
@@ -673,3 +703,38 @@ def getSheetValue(userEmail,sheet,key):
         return sheetvalue['values']
     except:
         return "Error"
+
+
+
+#Reports
+
+def getSuspendReport():
+    namecontainer = []
+    datecontainer = []
+    reportcontainer = {}
+    reportservice = build('admin', 'reports_v1', credentials=servicecreds('https://www.googleapis.com/auth/admin.reports.audit.readonly'))
+    results = reportservice.activities().list(userKey='all', applicationName='admin', eventName='SUSPEND_USER', maxResults=100).execute()
+    for item in results['items']:
+        for secondlevel in item['events']:
+            for thirdlevel in secondlevel['parameters']:
+                namecontainer.append(thirdlevel['value'])
+        datecontainer.append(item['id']['time'])
+    reportcontainer = dict(zip(namecontainer,datecontainer))
+    suspendoutput = pandas.DataFrame.from_dict(reportcontainer,orient='index')
+    suspendoutput.to_csv("suspendreport.csv")
+
+
+def getLastLogin():
+    names = []
+    lastlogin = []
+    activeusers = listAllActiveUsers()
+    for user in activeusers:
+        response = getUser(user, "lastLoginTime")
+        if str(response) != "[]":
+            names.append(user)
+        lastlogin.append(response)
+    else:
+        pass
+    output = dict(zip(names,lastlogin))
+    lastlogin = pandas.DataFrame.from_dict(output,orient='index')
+    lastlogin.to_csv("lastlogin.csv")
